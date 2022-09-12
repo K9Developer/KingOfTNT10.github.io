@@ -22,6 +22,8 @@ const generate_eq = async () => {
 
     await draw_eq(equation_data.equation, document.getElementById(`c-img`))
     document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
+    document.getElementById("show-sol").classList.remove("invisible");
+    document.getElementById("share").classList.remove("invisible");
 }
 
 const toggle_solutions = () => {
@@ -58,6 +60,8 @@ const solve_eq = async () => {
     }
 
     if (valid) {
+        document.getElementById("show-sol").classList.remove("invisible");
+        document.getElementById("share").classList.remove("invisible");
         equation = equation.replaceAll(" ", "")
         document.getElementById("equation").innerText = `Equation: ${equation}`
         console.log(equation)
