@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <title>Document</title>
+</head>
+<body>
+    
+    <canvas id="c-img" class="invisible"></canvas>
+    <div id="container">
+        <div id="top-buttons">
+            <button class="button" id="gen-eq">Generate Equation</button>
+            <div id="input-group">
+                <span id="eq-input-label">Equation</span>
+                <input type="text" id="eq-input">
+            </div>
+            <button class="button" id="solve-eq">Solve Equation</button>
+            
+        </div>
+    
+        <div id="footer-group">
+            <span id="equation"></span>
+            <image id="eq-img" style="display: block"></image>
+
+            <div id="after-eq">
+            <button class="button button-s" id="share">Share Problem</button>
+            <button class="button button-s" id="show-sol">Show Solutions</button></div>
+            <ul id="solutions" class="invisible"></ul>
+        </div>
+    </div>
+    <div class="invisible">
+        <img src="./assets/images/+.png" alt="" id="+" >
+        <img src="./assets/images/-.png" alt="" id="-" >
+        <img src="./assets/images/1.png" alt="" id="1" >
+        <img src="./assets/images/2.png" alt="" id="2" >
+        <img src="./assets/images/3.png" alt="" id="3" >
+        <img src="./assets/images/4.png" alt="" id="4" >
+        <img src="./assets/images/5.png" alt="" id="5" >
+        <img src="./assets/images/6.png" alt="" id="6" >
+        <img src="./assets/images/7.png" alt="" id="7" >
+        <img src="./assets/images/8.png" alt="" id="8" >
+        <img src="./assets/images/9.png" alt="" id="9" >
+        <img src="./assets/images/0.png" alt="" id="0" >
+        <img src="./assets/images/=.png" alt="" id="=" >
+        <img src="./assets/images/x.png" alt="" id="x" >
+        <img src="./assets/images/divide.png" alt="" id="divide" >
+    </div>
+
+    <script src="https://unpkg.com/mathjs@11.0.1/lib/browser/math.js"></script>
+    <script src="index.js" type="module"></script>
+</body>
+</html>
