@@ -24,7 +24,9 @@ const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One 
     width = Math.max(width, ctx.measureText(subtitle).width)
     canvas.width = width
     canvas.height = 300
-
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     const eq_list = eq.split("")
 
 
