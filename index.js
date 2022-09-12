@@ -87,3 +87,5 @@ document.getElementById("share").addEventListener("click", async () => {
 document.getElementById("solve-eq").addEventListener("click", async () => {
     solve_eq()
 });
+
+generate_eq()
