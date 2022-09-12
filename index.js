@@ -3,6 +3,7 @@ import { draw_eq } from './utils.js';
 
 
 const update_solutions = async (equation_data) => {
+    document.getElementById("solutions").innerHTML = ""
     let counter = 0
     for (let solution of equation_data.solutions) {
         counter++
@@ -15,7 +16,7 @@ const update_solutions = async (equation_data) => {
 const generate_eq = async () => {
     let equation_data = await create_equation()
     document.getElementById("equation").innerText = `Equation: ${equation_data.equation}`
-    document.getElementById("solutions").innerHTML = ""
+    
 
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
