@@ -7,7 +7,7 @@ const update_solutions = async (equation_data) => {
     let counter = 0
     for (let solution of equation_data.solutions) {
         counter++
-        document.getElementById("solutions").innerHTML += `<li class='solution-item'><div class='solution-container'><span class='solution-text'><i>Solution ${counter}:</i><b style="margin-left: 10px">${solution.new_equation} - ${solution.explanation}</b></span> <div className="img-container"><image id='sol-i-${counter}' class="sol-img"></image></div></div></li>`
+        document.getElementById("solutions").innerHTML += `<div class='solution-item'><div class='solution-container'><span class='solution-text'><i>Solution ${counter}:</i><b style="margin-left: 10px">${solution.new_equation} - ${solution.explanation}</b></span> <div className="img-container"><image id='sol-i-${counter}' class="sol-img"></image></div></div></div>`
         await draw_eq(solution.new_equation, document.getElementById(`c-img`), `Solution ${counter}`, solution.explanation)
         document.getElementById(`sol-i-${counter}`).src = document.getElementById(`c-img`).toDataURL();
     }
