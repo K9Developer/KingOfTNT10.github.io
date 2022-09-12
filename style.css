@@ -96,8 +96,9 @@ body {
 }
 
 .sol-img {
-    min-height:250px;
-    max-height:250px
+    /* min-height:250px;
+    max-height:250px; */
+    max-width: 100vw;
 }
 
 .invisible {
@@ -107,4 +108,8 @@ body {
 #after-eq {
     margin-top: 20px;
     display: block;
+}
+
+#eq-img {
+    max-width: 100vw;
 }
