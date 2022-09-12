@@ -37,9 +37,9 @@ const toggle_solutions = () => {
 }
 
 const share = async () => {
-    const base64url = document.getElementById(`eq-img`).src
+    const base64url = document.getElementById("eq-img").src
     const blob = await (await fetch(base64url)).blob();
-    const file = new File([blob], 'fileName.png', { type: blob.type });
+    const file = new File([blob], 'eq.png', { type: blob.type });
     navigator.share({
         title: 'Equation',
         text: 'Can you solve this? website - KingOfTNT10.github.io',
