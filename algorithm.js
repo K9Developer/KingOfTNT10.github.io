@@ -22,7 +22,7 @@ const _solution_exists = (result_map, equation) => {
 }
 
 
-const _get_equation_matchstick_count = (equation) => {
+const _get_equation_matchstick_count = async (equation) => {
     /*
     Gets the total matchstick count to check if stick was removed
     without being placed or placed without being removed
@@ -41,7 +41,7 @@ const _get_equation_matchstick_count = (equation) => {
     for (let char of equation) {
         try {
             equation_matchstick_count += get_match_sticks_count(
-                encode_num(char))
+                await encode_num(char))
         } catch (error) {
 
         }
@@ -64,7 +64,7 @@ const solve = async (equation) => {
     */
 
     // ---------- SETUP ----------//
-    let equation_matchstick_count = _get_equation_matchstick_count(equation)
+    let equation_matchstick_count = await _get_equation_matchstick_count(equation)
 
     if (evaluate_eq(equation)) {
         return { "solutions": [{ "new_equation": equation, "original_equation": equation, "explanation": ["Expression was already true"] }], "mutations": [] }
@@ -81,7 +81,7 @@ const solve = async (equation) => {
     // the numbers each number can become by removing/getting/moving one stick
 
     for (const [index, num] of equation.split("").entries()) {
-        // // console.log(1)
+
         // If the number exists then continue,
         // it will filter '=' or any other invalid char
         if (transform_data[num]) {
@@ -90,7 +90,7 @@ const solve = async (equation) => {
             //    - "to" (numbers you get when removing a stick from the number)
             //    - "from" (numbers you get when getting a stick from a number)
             //    - "morph" (numbers you get when moving a stick within the number)
-            // // console.log(transform_data[num])
+
             for (let opt in transform_data[num]) {
 
                 for (let num_opt of transform_data[num][opt]) {
@@ -114,13 +114,15 @@ const solve = async (equation) => {
                                     new_eq[index2] = from_num
                                     new_eq[index] = num_opt
                                     new_eq = new_eq.join("")
+
                                     let solve_data = create_eq(new_eq)
 
                                     // There are multiple checks that need to be verified:
                                     //    1. Check if the equation is true - it means that 1+1=4 wont go through
                                     //    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                                     //    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                                    if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
+
+                                    if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && await _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
 
                                         result_map["solutions"].push({
                                             "new_equation": solve_data[1],
@@ -155,13 +157,15 @@ const solve = async (equation) => {
                                     new_eq[index2] = from_num
                                     new_eq[index] = num_opt
                                     new_eq = new_eq.join("")
+
                                     let solve_data = create_eq(new_eq)
 
                                     // There are multiple checks that need to be verified:
                                     //    1. Check if the equation is true - it means that 1+1=4 wont go through
                                     //    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                                     //    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                                    if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
+
+                                    if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && await _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
 
                                         result_map["solutions"].push({
                                             "new_equation": solve_data[1],
@@ -185,7 +189,6 @@ const solve = async (equation) => {
                     } else {
                         // Test the equation's validity with the new number
                         let new_eq = equation.split("")
-                        let original = new_eq[index]
                         new_eq[index] = num_opt
                         new_eq = new_eq.join("")
                         let solve_data = create_eq(new_eq)
@@ -194,7 +197,7 @@ const solve = async (equation) => {
                         //    1. Check if the equation is true - it means that 1+1=4 wont go through
                         //    2. Check if the solution wasn't added already - because numbers lead to each other, so there can be duplicates
                         //    4. Check if there weren't extra/less sticks than the original one - So it wont remove a stick without placing it back somewhere
-                        if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
+                        if (solve_data[0] && !_solution_exists(result_map, solve_data[1]) && await _get_equation_matchstick_count(new_eq) == equation_matchstick_count) {
 
                             result_map["solutions"].push({
                                 "new_equation": solve_data[1],
