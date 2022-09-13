@@ -25,7 +25,10 @@ const generate_eq = async () => {
 
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
-
+    
+    document.getElementById("solutions").classList.add("invisible");
+    document.getElementById("show-sol").innerText = "Show Solutions"
+    
     await draw_eq(equation_data.equation, document.getElementById(`c-img`))
     document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
     document.getElementById("show-sol").classList.remove("invisible");
