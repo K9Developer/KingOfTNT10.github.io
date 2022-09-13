@@ -17,10 +17,10 @@ const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One 
 
 
     const ctx = canvas.getContext('2d');
-    ctx.font = '15px Arial';
+    ctx.font = '30px Arial';
 
     let width = Math.max(eq.length * (90 + 20), ctx.measureText(title).width + 100)
-    ctx.font = '20px Arial';
+    ctx.font = '15px Arial';
     width = Math.max(width, ctx.measureText(subtitle).width)
     canvas.width = width
     canvas.height = 300
