@@ -11,12 +11,17 @@ const update_solutions = async (equation_data) => {
         await draw_eq(solution.new_equation, document.getElementById(`c-img`), `Solution ${counter}`, solution.explanation)
         document.getElementById(`sol-i-${counter}`).src = document.getElementById(`c-img`).toDataURL();
     }
+
+    if (!equation_data.solutions.length) {
+        console.log(equation_data)
+        document.getElementById("solutions").innerHTML += `<div class='solution-item'><div class='solution-container'><span>No solutions found, tried ${equation_data.mutations.length} combinations</span></div></div>`
+    }
 }
 
 const generate_eq = async () => {
     let equation_data = await create_equation()
     document.getElementById("equation").innerText = `Equation: ${equation_data.equation}`
-    
+
 
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
@@ -65,7 +70,7 @@ const solve_eq = async () => {
         document.getElementById("share").classList.remove("invisible");
         equation = equation.replaceAll(" ", "")
         document.getElementById("equation").innerText = `Equation: ${equation}`
-        console.log(equation)
+
         let equation_data = await solve(equation)
         await update_solutions(equation_data)
         await draw_eq(equation, document.getElementById(`c-img`))
