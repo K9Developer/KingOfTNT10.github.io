@@ -215,10 +215,10 @@ const solve = async (equation) => {
                     }
                 }
             }
-            result_map["mutations"] = mutations
-            return result_map
         }
     }
+    result_map["mutations"] = mutations
+    return result_map
 }
 
 
