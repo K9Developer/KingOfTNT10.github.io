@@ -32,8 +32,8 @@ const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One 
 
 
     for (let i of eq.split("")) {
-        let image = document.getElementById(i);
-        ctx.drawImage(image, ((canvas.width - (eq.length * (90 + 10))) / 2) + 10 + eq_list.indexOf(image.id == "/" ? "divide" : image.id) * image.width + 10, canvas.height / 2 - image.height / 2)
+         let image = document.getElementById(i == "/" ? "divide" : i);
+        ctx.drawImage(image, ((canvas.width - (eq.length * (90 + 10))) / 2) + 10 + eq_list.indexOf(i) * image.width + 10, canvas.height / 2 - image.height / 2)
         eq_list[eq_list.indexOf(image.id)] = null
     }
     if (title) {
