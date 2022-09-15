@@ -27,12 +27,13 @@ const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One 
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
+    eq = eq.replace("*", "x").replace("X", "x")
     const eq_list = eq.split("")
 
 
     for (let i of eq.split("")) {
         let image = document.getElementById(i);
-        ctx.drawImage(image, ((canvas.width - (eq.length * (90 + 10))) / 2) + 10 + eq_list.indexOf(image.id) * image.width + 10, canvas.height / 2 - image.height / 2)
+        ctx.drawImage(image, ((canvas.width - (eq.length * (90 + 10))) / 2) + 10 + eq_list.indexOf(image.id == "/" ? "divide" : image.id) * image.width + 10, canvas.height / 2 - image.height / 2)
         eq_list[eq_list.indexOf(image.id)] = null
     }
     if (title) {
