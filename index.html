@@ -1,81 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-        <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KY5N3VD06Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+import { create_equation, solve } from './algorithm.js';
+import { draw_eq } from './utils.js';
 
-  gtag('config', 'G-KY5N3VD06Y');
-</script>
-     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1695973873596818"
-     crossorigin="anonymous"></script>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="Pragma" content="no-cache" />
-    <meta http-equiv="Expires" content="0" />
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="style.css" rel="stylesheet" type="text/css" id="style">
-    <title>Matchstick Solver</title>
-        
-   
-</head>
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
 
-<body>
-    <div>
-    Made By Ilai K (KingOfTNT10/K9Dev):
-    <br/>
-    <span style="margin-left: 20px"> - Algorithm - <a target="_blank" rel="noopener noreferrer" href="https://github.com/KingOfTNT10/Matchstick_Algorithm-Python">Code on Github</a></span>
-    <br/>
-    <span style="margin-left: 20px; display:block; margin-bottom: 20px;"> - Website - <a target="_blank" rel="noopener noreferrer" href="https://github.com/KingOfTNT10/KingOfTNT10.github.io">Code On Github</a></span></div>
-    
-    <canvas id="c-img" class="invisible"></canvas>
-    <div id="container">
-        <div id="top-buttons">
-            <button class="button" id="gen-eq">Generate Equation</button>
-            <div id="input-group">
-                <span id="eq-input-label">Equation</span>
-                <input type="text" id="eq-input">
-            </div>
-            <button class="button" id="solve-eq">Solve Equation</button>
-            
-        </div>
-            
-        <div id="footer-group">
-            <span id="equation"></span>
-            <image id="eq-img" style="display: block"></image>
+const update_solutions = async (equation_data) => {
+    document.getElementById("solutions").innerHTML = ""
+    let counter = 0
+    for (let solution of equation_data.solutions) {
+        counter++
+        document.getElementById("solutions").innerHTML += `<div class='solution-item'><div class='solution-container'><span class='solution-text'><i>Solution ${counter}:</i><b style="margin-left: 10px">${solution.new_equation} - ${solution.explanation}</b></span> <div className="img-container"><image id='sol-i-${counter}' class="sol-img"></image></div></div></div>`
+        await draw_eq(solution.new_equation, document.getElementById(`c-img`), `Solution ${counter}`, solution.explanation)
+        document.getElementById(`sol-i-${counter}`).src = document.getElementById(`c-img`).toDataURL();
+    }
 
-            <div id="after-eq">
-            <button class="button button-s invisible" id="share">Share Equation</button>
-            <button class="button button-s invisible" id="show-sol">Show Solutions</button></div>
-            <div id="solutions" class="invisible"></div>
-        </div>
-    </div>
-    <div style="display:none;">
-        <img src="./assets/images/+.png" alt="" id="+" >
-        <img src="./assets/images/-.png" alt="" id="-" >
-        <img src="./assets/images/1.png" alt="" id="1" >
-        <img src="./assets/images/2.png" alt="" id="2" >
-        <img src="./assets/images/3.png" alt="" id="3" >
-        <img src="./assets/images/4.png" alt="" id="4" >
-        <img src="./assets/images/5.png" alt="" id="5" >
-        <img src="./assets/images/6.png" alt="" id="6" >
-        <img src="./assets/images/7.png" alt="" id="7" >
-        <img src="./assets/images/8.png" alt="" id="8" >
-        <img src="./assets/images/9.png" alt="" id="9" >
-        <img src="./assets/images/0.png" alt="" id="0" >
-        <img src="./assets/images/=.png" alt="" id="=" >
-        <img src="./assets/images/x.png" alt="" id="x" >
-        <img src="./assets/images/divide.png" alt="" id="divide" >
-    </div>
-    <script src="https://unpkg.com/mathjs@11.0.1/lib/browser/math.js"></script>
-    <script src="index.js" type="module" id="script"></script>
-    <script type="text/javascript">
-   document.getElementById('script').src = './index.js' + '?v=' + Date.now();
-   document.getElementById('style').src = './style.css' + '?v=' + Date.now();
-</script>
-</body>
-</html>
+    if (!equation_data.solutions.length) {
+        console.log(equation_data)
+        document.getElementById("solutions").innerHTML += `<div class='solution-item'><div class='solution-container'><span>No solutions found, tried ${equation_data.mutations.length} combinations</span></div></div>`
+    }
+}
+
+const generate_eq = async () => {
+    let equation_data = await create_equation()
+    document.getElementById("equation").innerText = `Equation: ${equation_data.equation}`
+
+
+    await update_solutions(equation_data)
+    document.getElementById("eq-input").value = equation_data.equation
+    urlParams.set("eq", btoa(equation_data.equation))
+    window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${urlParams}`));
+    await draw_eq(equation_data.equation, document.getElementById(`c-img`))
+    document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
+    document.getElementById("show-sol").classList.remove("invisible");
+    document.getElementById("share").classList.remove("invisible");
+}
+
+const toggle_solutions = () => {
+    if (document.getElementById("solutions").classList.contains("invisible")) {
+        document.getElementById("solutions").classList.remove("invisible");
+        document.getElementById("show-sol").innerText = "Hide Solutions"
+    } else {
+        document.getElementById("solutions").classList.add("invisible");
+        document.getElementById("show-sol").innerText = "Show Solutions"
+    }
+}
+
+const share = async () => {
+    const base64url = document.getElementById("eq-img").src
+    const blob = await (await fetch(base64url)).blob();
+    const file = new File([blob], 'eq.png', { type: blob.type });
+    navigator.share({
+        title: 'Equation',
+        text: `Can you solve this?\n equation - ${window.location.href}`,
+        files: [file],
+    })
+}
+
+const solve_eq = async (eq = null) => {
+    let equation = eq
+    if (!equation) {
+        equation = document.getElementById("eq-input").value
+    }
+
+    let valid = true
+
+    for (let char of equation.split("")) {
+        if (!"1234567890=-+*/ ".includes(char)) {
+            valid = false
+            document.getElementById("equation").innerHTML = `<b><span style="color: darkred;">${equation} is not a valid equation (char: ${char})!</span></b>`
+            break
+        }
+    }
+
+    if (valid) {
+        document.getElementById("eq-input").value = equation
+        document.getElementById("show-sol").classList.remove("invisible");
+        document.getElementById("share").classList.remove("invisible");
+        equation = equation.replaceAll(" ", "")
+        document.getElementById("equation").innerText = `Equation: ${equation}`
+
+        urlParams.set("eq", btoa(equation))
+        window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${urlParams}`));
+
+        let equation_data = await solve(equation)
+        await update_solutions(equation_data)
+        await draw_eq(equation, document.getElementById(`c-img`))
+        document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
+    }
+}
+
+document.getElementById("show-sol").addEventListener("click", async () => {
+    toggle_solutions()
+});
+
+document.getElementById("gen-eq").addEventListener("click", async () => {
+    generate_eq()
+});
+
+document.getElementById("share").addEventListener("click", async () => {
+    share()
+});
+
+document.getElementById("solve-eq").addEventListener("click", async () => {
+    solve_eq()
+});
+
+
+if (urlParams.get("eq")) {
+    let decoded_eq = atob(urlParams.get("eq"))
+    solve_eq(decoded_eq)
+} else {
+    generate_eq()
+}
