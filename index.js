@@ -27,7 +27,7 @@ const generate_eq = async () => {
 
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
-    urlParams.set("eq", equation_data.equation)
+    urlParams.set("eq", btoa(equation_data.equation))
     window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${urlParams}`));
     await draw_eq(equation_data.equation, document.getElementById(`c-img`))
     document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
@@ -79,6 +79,9 @@ const solve_eq = async (eq = null) => {
         equation = equation.replaceAll(" ", "")
         document.getElementById("equation").innerText = `Equation: ${equation}`
 
+        urlParams.set("eq", btoa(equation))
+        window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${urlParams}`));
+
         let equation_data = await solve(equation)
         await update_solutions(equation_data)
         await draw_eq(equation, document.getElementById(`c-img`))
@@ -104,7 +107,8 @@ document.getElementById("solve-eq").addEventListener("click", async () => {
 
 
 if (urlParams.get("eq")) {
-    solve_eq(urlParams.get("eq"))
+    let decoded_eq = atob(urlParams.get("eq"))
+    solve_eq(decoded_eq)
 } else {
     generate_eq()
 }
