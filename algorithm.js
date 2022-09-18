@@ -75,7 +75,7 @@ const solve = async (equation) => {
 
     let mutations = []
 
-    transform_data = { "0": { "to": [], "from": ["8"], "morph": ["6", "9"] }, "1": { "to": [], "from": ["7"], "morph": [] }, "2": { "to": [], "from": [], "morph": ["3", "5"] }, "3": { "to": [], "from": ["9"], "morph": ["2", "5"] }, "4": { "to": [], "from": [], "morph": [] }, "5": { "to": [], "from": ["9", "6"], "morph": ["2", "3"] }, "6": { "to": ["5"], "from": ["8"], "morph": ["9", "0"] }, "7": { "to": ["1"], "from": [], "morph": [] }, "8": { "to": ["6", "9", "0"], "from": [], "morph": [] }, "9": { "to": ["3", "5"], "from": ["8"], "morph": ["6", "0"] }, "+": { "to": ["-"], "from": [], "morph": [] }, "-": { "to": [], "from": ["+"], "morph": [] } }
+    transform_data = { "0": { "to": [], "from": ["8"], "morph": ["6", "9"] }, "1": { "to": [], "from": ["7"], "morph": [] }, "2": { "to": [], "from": [], "morph": ["3"] }, "3": { "to": [], "from": ["9"], "morph": ["2", "5"] }, "4": { "to": [], "from": [], "morph": [] }, "5": { "to": [], "from": ["9", "6"], "morph": ["3"] }, "6": { "to": ["5"], "from": ["8"], "morph": ["9", "0"] }, "7": { "to": ["1"], "from": [], "morph": [] }, "8": { "to": ["6", "9", "0"], "from": [], "morph": [] }, "9": { "to": ["3", "5"], "from": ["8"], "morph": ["6", "0"] }, "+": { "to": ["-"], "from": [], "morph": [] }, "-": { "to": [], "from": ["+"], "morph": [] } }
 
     // Opens the matchstick_transform_data file that contains
     // the numbers each number can become by removing/getting/moving one stick
