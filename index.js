@@ -1,6 +1,8 @@
 import { create_equation, solve } from './algorithm.js';
 import { draw_eq } from './utils.js';
 
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
 
 const update_solutions = async (equation_data) => {
     document.getElementById("solutions").innerHTML = ""
@@ -25,10 +27,8 @@ const generate_eq = async () => {
 
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
-    
-    document.getElementById("solutions").classList.add("invisible");
-    document.getElementById("show-sol").innerText = "Show Solutions"
-    
+    urlParams.set("eq", equation_data.equation)
+    window.history.replaceState({}, "", decodeURIComponent(`${window.location.pathname}?${urlParams}`));
     await draw_eq(equation_data.equation, document.getElementById(`c-img`))
     document.getElementById(`eq-img`).src = document.getElementById(`c-img`).toDataURL();
     document.getElementById("show-sol").classList.remove("invisible");
@@ -51,13 +51,17 @@ const share = async () => {
     const file = new File([blob], 'eq.png', { type: blob.type });
     navigator.share({
         title: 'Equation',
-        text: 'Can you solve this? website - KingOfTNT10.github.io',
+        text: `Can you solve this?\n equation - ${window.location.href}`,
         files: [file],
     })
 }
 
-const solve_eq = async () => {
-    let equation = document.getElementById("eq-input").value
+const solve_eq = async (eq = null) => {
+    let equation = eq
+    if (!equation) {
+        equation = document.getElementById("eq-input").value
+    }
+
     let valid = true
 
     for (let char of equation.split("")) {
@@ -69,6 +73,7 @@ const solve_eq = async () => {
     }
 
     if (valid) {
+        document.getElementById("eq-input").value = equation
         document.getElementById("show-sol").classList.remove("invisible");
         document.getElementById("share").classList.remove("invisible");
         equation = equation.replaceAll(" ", "")
@@ -97,4 +102,9 @@ document.getElementById("solve-eq").addEventListener("click", async () => {
     solve_eq()
 });
 
-generate_eq()
+
+if (urlParams.get("eq")) {
+    solve_eq(urlParams.get("eq"))
+} else {
+    generate_eq()
+}
