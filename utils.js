@@ -13,6 +13,39 @@ let number_data = {
     "data": { "1": [[1, 0, 0], [1, 0, 0, 0]], "2": [[0, 1, 1], [1, 1, 0, 1]], "3": [[0, 1, 1], [0, 1, 1, 1]], "4": [[1, 0, 1], [0, 1, 1, 0]], "5": [[1, 1, 0], [0, 1, 1, 1]], "6": [[1, 1, 0], [1, 1, 1, 1]], "7": [[0, 1, 1], [0, 0, 1, 0]], "8": [[1, 1, 1], [1, 1, 1, 1]], "9": [[1, 1, 1], [0, 1, 1, 1]], "0": [[1, 1, 1], [1, 0, 1, 1]], "+": "plus", "-": "minus" }
 };
 
+const ordinal = (n) => { return (n ? (n + ["st", "nd", "rd"][((n + 90) % 100 - 10) % 10 - 1] || n + "th") : '') }
+
+const count = (arr, value) => { arr = arr.split(""); return arr.filter(val => val === value).length }
+
+const get_count_of_num = (num, num_to, eq_before, eq_after) => {
+    /*Gets the count number of the edited number.
+    example (eq="6+4=4", our target is the last 4). it would return 2nd.
+    It does that by checking whether the number at the index of the original equation (`eq_before`) is `num`
+    and checks if at the same index the edited number (`num_to`) is equal to the value at index of the edited equation (`eq_after`)
+
+    Args:
+        num (int): The original number of the equation
+        num_to (int): The number the original number changed to
+        eq_before (str): The original equation
+        eq_after (str): The edited equation
+
+    Returns:
+        str: The ordinal (1st, 2nd, etc) number of the edited number
+    */
+
+    let num_count = 0
+    for (const [index, [n_before, n_after]] of zip([eq_before.split(""), eq_after.split("")]).entries()) {
+
+        if (n_before == num) {
+            num_count += 1
+        }
+
+        if (num.length > 1 && index > 0 && num == eq_before[index - 1] + n_before && num_to.length > 1 && num_to == eq_after[index - 1] + n_after || n_before == num && n_after == num_to) {
+            return num_count
+        }
+    }
+}
+
 const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One Matchstick?", subtitle = "Created By K9Dev (KingOfTNT10.github.io)") => {
 
 
@@ -26,13 +59,13 @@ const draw_eq = async (eq, canvas, title = "Can You Fix This By Moving Only One 
     canvas.height = 300
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
+
     eq = eq.replace("*", "x").replace("X", "x")
     const eq_list = eq.split("")
 
 
     for (let i of eq.split("")) {
-         let image = document.getElementById(i == "/" ? "divide" : i);
+        let image = document.getElementById(i == "/" ? "divide" : i);
         ctx.drawImage(image, ((canvas.width - (eq.length * (90 + 10))) / 2) + 10 + eq_list.indexOf(i) * image.width + 10, canvas.height / 2 - image.height / 2)
         eq_list[eq_list.indexOf(image.id)] = null
     }
@@ -95,6 +128,9 @@ const decode_num = async (number) => {
         str: The converted number
     */
 
+    if (typeof number != "object") {
+        return number
+    }
 
     for (let num in number_data.data) {
         if (number_data.data[num] == number) {
@@ -113,8 +149,7 @@ const encode_num = async (number) => {
     Returns:
         number_format: The converted number in the custom format
         */
-
-    return number_data.data[number]
+    return number.length != 1 ? number : number_data.data[number]
 }
 
 const evaluate_eq = (eq) => {
@@ -142,13 +177,13 @@ const evaluate_eq = (eq) => {
 }
 
 const create_eq = (original) => {
-    return [evaluate_eq(original), original]
+    return [evaluate_eq(original.replace("--", "+")), original.replace("--", "+")]
 }
 
 const zip = (arrays) => {
-    // console.log(arrays)
-    return arrays[0].map(function (_, i) {
-        return arrays.map(function (array) { return array[i] })
+
+    return arrays[0].map((_, i) => {
+        return arrays.map((array) => { return array[i] })
     });
 }
 
@@ -164,16 +199,13 @@ const get_diff = (num1, num2) => {
         str: Returns the location of where num1 has gotten/removed a stick
     */
 
-    // // console.log(num1)
 
-    if (num1 == "plus" || num1 == "minus") {
+    if (num1 == "plus" || num1 == "minus" || typeof num1 != 'object' || typeof num2 != 'object') {
         return ''
     }
-
     for (const [row_index, [row_org, row_new]] of zip([num1, num2]).entries()) {
         for (const [col_index, [col_org, col_new]] of zip([row_org, row_new]).entries()) {
             if (col_org == 1 && col_new == 0) {
-                // // console.log(explanation_map[`${row_index}${col_index}`])
                 return explanation_map[`${row_index}${col_index}`]
             }
         }
@@ -181,7 +213,7 @@ const get_diff = (num1, num2) => {
     return ""
 }
 
-const explanation_generator = async (num1, num1_to, num2, num2_to, morph = false) => {
+const explanation_generator = async (num1, num1_to, num2, num2_to, eq_after, eq_before, morph = false) => {
     /*
     Generates a detailed explanation on how to solve the equation
     
@@ -195,12 +227,20 @@ const explanation_generator = async (num1, num1_to, num2, num2_to, morph = false
     Returns:
         str: A detailed description of what to do to solve the equation
     */
-    // console.log(num1, num1_to, num2, num2_to)
+
+
     if (morph) {
-        return `moved ${get_diff(num2, num1) ? 'the ' + get_diff(num1, num2) + ' of ' : ''}${await decode_num(num1)} to it's ${get_diff(num2, num1)} to make a ${await decode_num(num2)}.`
+        let num2_ordinal = count(eq_before, await decode_num(num1)) > 1 ? (`the ${ordinal(get_count_of_num(await decode_num(num1), await decode_num(num2), eq_before, eq_after))} `) : ''
+        return `moved ${get_diff(num2, num1) ? 'the ' + get_diff(num1, num2) + ' of ' : ''}${num2_ordinal}${await decode_num(num1)} to it's ${get_diff(num2, num1)} to make a ${await decode_num(num2)}.`
     }
 
-    return `removed a matchstick from ${get_diff(num2, num2_to) ? 'the ' + get_diff(num2, num2_to) + ' of ' : ''} ${await decode_num(num2)} (to make a ${await decode_num(num2_to)}) and put it into the ${get_diff(num1_to, num1)} of ${await decode_num(num1)} (to make a ${await decode_num(num1_to)}).`
+    let num2_position = await get_diff(num2, num2_to) ? `the ${get_diff(num2, num2_to)} of ` : ''
+    let num2_ordinal = count(eq_before, await decode_num(num2)) > 1 ? `the ${ordinal(get_count_of_num(await decode_num(num2), await decode_num(num2_to), eq_before, eq_after))} ` : ''
+    let is_the = count(eq_before, await decode_num(num2)) > 1 || get_diff(num2_to, num2) ? "the " : ''
+    let infront_or_before = typeof num1_to == "object" || ["minus", "plus"].includes(await decode_num(num1_to)) ? `into ${is_the}` : "before "
+    let result_num = typeof num1_to == "object" ? await decode_num(num1_to) : num1_to
+
+    return `removed a matchstick from ${num2_position}${num2_ordinal}${await decode_num(num2)} (to make a ${await decode_num(num2_to)}) and put it ${infront_or_before}` + (await get_diff(num1_to, num1) ? `${await get_diff(num1_to, num1)} of ` : '') + `${await decode_num(num1)} (to make a ${result_num}).`
 
 }
 

@@ -8,6 +8,9 @@ const update_solutions = async (equation_data) => {
     document.getElementById("solutions").innerHTML = ""
     let counter = 0
     for (let solution of equation_data.solutions) {
+        if (solution.new_equation.includes("+-")) {
+            continue;
+        }
         counter++
         document.getElementById("solutions").innerHTML += `<div class='solution-item'><div class='solution-container'><span class='solution-text'><i>Solution ${counter}:</i><b style="margin-left: 10px">${solution.new_equation} - ${solution.explanation}</b></span> <div className="img-container"><image id='sol-i-${counter}' class="sol-img"></image></div></div></div>`
         await draw_eq(solution.new_equation, document.getElementById(`c-img`), `Solution ${counter}`, solution.explanation)
@@ -24,7 +27,8 @@ const generate_eq = async () => {
     let equation_data = await create_equation()
     document.getElementById("equation").innerText = `Equation: ${equation_data.equation}`
 
-
+    document.getElementById("solutions").classList.add("invisible");
+    document.getElementById("show-sol").innerText = "Show Solutions"
     await update_solutions(equation_data)
     document.getElementById("eq-input").value = equation_data.equation
     urlParams.set("eq", btoa(equation_data.equation))
